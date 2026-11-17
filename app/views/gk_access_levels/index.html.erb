@@ -1,0 +1,86 @@
+<%# Levels: the levels by rank, each role's ceiling, and Private: the instance's kind for issues and notes, what becomes
+    strict, and the projects with their own. The list's class is not gk-access-levels, the class core gives the
+    link of the same name in the admin menu. Delete and the save of Private ask first in GK GUI Stuff's upper layer
+    (gk_gui_stuff_confirm_data). %>
+<div class="contextual"><%= link_to sprite_icon('add', l(:label_gk_access_level_new)), new_gk_access_level_path, class: 'icon',
+                                    title: l(:text_gk_access_level_new_tip), 'aria-label': l(:text_gk_access_level_new_tip) %></div>
+<h2><%= l(:label_gk_access_levels) %></h2>
+<% unless GkAccess.records? %><p class="warning"><%= l(:error_gk_access_records) %></p><% end %>
+<p class="info"><%= l(:text_gk_access_levels_info) %></p>
+
+<table class="list gk-access-level-list" data-gk-gui-rowmenu>
+  <thead><tr><th><%= l(:field_name) %></th><th><%= l(:label_gk_access_key) %></th><th><%= l(:label_gk_access_rank) %></th>
+    <th><%= l(:field_status) %></th><th></th></tr></thead>
+  <tbody>
+  <% @levels.each do |lv| %>
+    <tr class="<%= lv.closed? ? 'locked' : '' %>">
+      <td class="name"><%= link_to lv.label, edit_gk_access_level_path(lv) %></td>
+      <td class="key"><code><%= lv.key %></code></td>
+      <td class="rank"><%= lv.rank %></td>
+      <%# core's badge for a state, as a version's in core's list of versions; the cell centres it on the row %>
+      <% state = lv.closed? ? 'closed' : 'open' %>
+      <td class="status"><span class="badge badge-status-<%= state %> gk-access-level-status gk-access-level-status-<%= state %>"><%= lv.closed? ? l(:label_gk_access_closed) : l(:label_gk_access_open_for_new) %></span></td>
+      <td class="buttons">
+        <% unless lv.default? || lv.in_use? %>
+          <%= link_to sprite_icon('del', l(:button_delete)), gk_access_level_path(lv), method: :delete,
+                      data: gk_gui_stuff_confirm_data.merge(gk_gui_row_action: true), class: 'icon',
+                      title: l(:text_gk_access_level_delete_tip), 'aria-label': l(:text_gk_access_level_delete_tip) %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+<%= gk_gui_stuff_row_menu %>
+
+<h3 style="margin-block-start:1.5em"><%= l(:label_gk_access_ceilings) %></h3>
+<p class="info"><%= l(:text_gk_access_ceilings_info) %></p>
+<%= form_tag(gk_access_level_ceilings_path, id: 'gk-access-ceilings') do %>
+<table class="list gk-access-ceilings">
+  <thead><tr><th><%= l(:label_role) %></th><th><%= l(:label_gk_access_ceiling) %></th></tr></thead>
+  <tbody>
+  <% @roles.each do |role| %>
+    <tr>
+      <td class="name"><%= role.name %></td>
+      <td class="ceiling"><%= select_tag "ceiling[#{role.id}]",
+                         options_for_select(@levels.map { |lv| [lv.label, lv.id] }, @ceilings[role.id] || GkAccess.lowest&.id),
+                         id: "gk-access-ceiling-#{role.id}" %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+<p><%= submit_tag l(:button_save) %></p>
+<% end %>
+
+<h3 style="margin-block-start:1.5em"><%= l(:label_gk_access_private) %></h3>
+<p class="info"><%= l(:text_gk_access_private_info) %></p>
+<%= form_tag(gk_access_level_private_path, id: 'gk-access-private') do %>
+  <%= render partial: 'gk_access_private_modes/choices', locals: { mode: @mode, instance_mode: nil, may_loosen: true, prefix: 'gk-access-private' } %>
+  <%= render partial: 'gk_access_private_modes/inventory', locals: { inventory: @inventory } %>
+  <p><%= submit_tag l(:button_save), data: gk_gui_stuff_confirm_data(l(:text_gk_access_private_save_confirm)) %></p>
+<% end %>
+<h4><%= l(:label_gk_access_private_projects) %></h4>
+<% if @project_modes.present? %>
+  <ul class="gk-access-private-projects">
+  <% @project_modes.each do |m| %>
+    <li><%= link_to m.project.name, settings_project_path(m.project, tab: 'gk_access_private') %>:
+      <%= [(l(:label_gk_access_private_issues) if m.issues_strict?), (l(:label_gk_access_private_notes) if m.notes_strict?)].compact.join(', ') %>
+      <%= l(:label_gk_access_private_strict).downcase %></li>
+  <% end %>
+  </ul>
+<% else %>
+  <p class="nodata"><%= l(:text_gk_access_private_no_projects) %></p>
+<% end %>
+<h4><%= l(:label_gk_access_private_counts) %></h4>
+<% if @counts.present? %>
+  <table class="list gk-access-private-counts">
+    <thead><tr><th><%= l(:label_project) %></th><th><%= l(:label_gk_access_private_issues) %></th><th><%= l(:label_gk_access_private_notes) %></th></tr></thead>
+    <tbody>
+    <% @counts.each do |project, c| %>
+      <tr><td class="name"><%= link_to project.name, project_path(project) %></td><td class="issues"><%= c[:issues] %></td><td class="notes"><%= c[:notes] %></td></tr>
+    <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p class="nodata"><%= l(:text_gk_access_private_no_counts) %></p>
+<% end %>

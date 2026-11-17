@@ -1,0 +1,11 @@
+<%# By a private note in the history: which kind holds and who sees it. Full text: here, under the note, and nothing on
+    the fold list. Icon only: the lock, first on the fold list of the note's text when it has one (the slot takes it by the
+    id Redmine gives the text), else after the note's badge Private in its head (gk_access.js, by the id Redmine gives
+    the badge) %>
+<% journal = local_assigns[:journal] %>
+<% if GkAccess::Private.ready? && GkAccess::Private.hint_on? && journal&.private_notes? && journal.project %>
+  <%= render partial: 'gk_access_hooks/hint',
+             locals: { lock: GkAccess::Private.hint_shape == 'icon',
+                       data: { gk_gui_fold_slot_for: "journal-#{journal.id}-notes", gk_access_after: "journal-#{journal.id}-private_notes" },
+                       hint: GkAccess::Private.explain(:notes, journal.project, item: journal, author: journal.user) } %>
+<% end %>

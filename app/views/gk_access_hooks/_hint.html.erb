@@ -1,0 +1,14 @@
+<%# Which kind of Private holds and who sees it (GkAccess::Private.explain), in one of two forms with the same lock.
+    lock: the lock alone, a press on it opens the line in a popover (a tooltip is not enough on a touch screen), the line its
+    tooltip and name; data: where a script lays it (gk_access.js); head: it stands after the badges of an issue's head,
+    which gk_access.css lines it up with. Otherwise the lock and the line as text. %>
+<% kind = hint[:strict] ? 'gk-access-strict' : 'gk-access-core' %>
+<% line = "#{hint[:label]}: #{hint[:text]}" %>
+<% if local_assigns[:lock] %>
+  <% lock_html = { id: local_assigns[:id], class: ['gk-access-private-hint', 'gk-access-private-lock', local_assigns[:head] ? 'gk-access-private-lock-head' : nil, kind].compact.join(' '), data: local_assigns[:data] || {} } %>
+  <%= gk_gui_stuff_popover(line, icon: 'lock', icon_only: true, tap: true, role: :admin, html: lock_html) { line } %>
+<% else %>
+<%= content_tag(:p, class: ['gk-access-private-hint', kind], id: local_assigns[:id]) do %>
+  <%= content_tag(:span, sprite_icon('lock'), class: 'gk-access-private-icon') %> <%= line %>
+<% end %>
+<% end %>

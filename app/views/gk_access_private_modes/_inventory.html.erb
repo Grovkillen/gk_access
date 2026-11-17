@@ -1,0 +1,12 @@
+<%# What becomes strictly private, and who loses access, if strict is chosen where it does not hold yet %>
+<div class="flash warning gk-access-inventory">
+  <p><%= l(:text_gk_access_inventory, notes: inventory['private_notes'], issues: inventory['private_issues']) %></p>
+  <% if inventory['losing'].present? %>
+    <p><%= l(:label_gk_access_losing) %></p>
+    <ul>
+    <% inventory['losing'].each do |x| %>
+      <li><%= l(:"text_gk_access_losing_#{x['kind']}", name: x['name'].to_s, count: x['count'].to_i) %></li>
+    <% end %>
+    </ul>
+  <% end %>
+</div>

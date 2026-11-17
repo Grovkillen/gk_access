@@ -1,0 +1,12 @@
+<%# By the check box Private in the issue form, for whoever may make the issue private: a lock after Redmine's label in
+    both forms of the row, a press on it opens the explanation; the explanation is also the tooltip of the lock, the check
+    box and its label. The lock is drawn where the hook stands and names where it belongs: the row of the check box by
+    the id Redmine gives it (data-gk-access-into) and the box and its label by theirs (data-gk-access-tip);
+    gk_access.js lays it there, also when the form is drawn anew %>
+<% issue = local_assigns[:issue] %>
+<% if GkAccess::Private.ready? && GkAccess::Private.hint_on? && issue&.project && (issue.safe_attribute?('is_private') || issue.is_private?) %>
+  <%= render partial: 'gk_access_hooks/hint',
+             locals: { id: 'gk-access-private-form-hint', lock: true,
+                       data: { gk_access_into: 'issue_is_private_wrap', gk_access_tip: 'issue_is_private issue_is_private_label' },
+                       hint: GkAccess::Private.explain(:issues, issue.project, item: issue, author: issue.author || User.current, assignee: issue.assigned_to) } %>
+<% end %>

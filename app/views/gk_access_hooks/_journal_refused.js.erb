@@ -1,0 +1,31 @@
+<%# After Redmine's answer to a changed note, which draws the note as it was sent also when the save was refused: where
+    this plugin refused the change of Private, the note's real state from the database and the refusal. Plain DOM. %>
+<% journal = local_assigns[:journal] %>
+<% refused = GkAccess::Private.refused_note(journal) %>
+<% if journal %>
+(function () {
+  var old = document.getElementById('gk-access-note-refused-<%= journal.id %>');
+  if (old) old.remove();
+<% if refused && journal.notes.blank? && journal.details.empty? %>
+  <%# the text was emptied in the same form, and Redmine's answer takes such a note off the page: the page is drawn anew, with the refusal as Redmine's own message %>
+  <% controller.flash[:error] = journal.errors.full_messages.join(', ') %>
+  window.location.reload();
+<% elsif refused %>
+  var change = document.getElementById('change-<%= journal.id %>');
+  if (change) change.className = '<%= j refused.css_classes %>';
+  var mark = document.getElementById('journal-<%= journal.id %>-private_notes');
+  if (mark) mark.outerHTML = '<%= j render_private_notes_indicator(refused) %>';
+  var notes = document.getElementById('journal-<%= journal.id %>-notes');
+  <% if journal.notes_changed? %>
+  <%# the note's text sent with it was not saved either %>
+  if (notes) {
+    notes.outerHTML = '<%= j render_notes(refused.issue, refused, reply_links: authorize_for('issues', 'edit')) %>';
+    notes = document.getElementById('journal-<%= journal.id %>-notes');
+  }
+  <% end %>
+  var edited = change && change.querySelector('span.update-info');
+  if (edited) edited.outerHTML = '<%= j render_journal_update_info(refused).to_s %>';
+  if (notes) notes.insertAdjacentHTML('beforebegin', '<%= j content_tag(:div, notice_icon('error') + journal.errors.full_messages.join(', '), id: "gk-access-note-refused-#{journal.id}", class: 'flash error', role: 'alert') %>');
+<% end %>
+})();
+<% end %>

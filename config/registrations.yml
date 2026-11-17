@@ -1,0 +1,62 @@
+# config/registrations.yml: what gk_access puts in the shared layers. Empty lists mean nothing
+# there; no key may be missing. A checked print of what the code registers: init.rb and extensions/gk_access/ are
+# the source, and every row points at something that exists. What is only planned is not here until it is
+# built. access_items: the things that carry a level (other plugins declare theirs). Registered in code without a
+# section here: the levels' names as a type in fields' Translations (core.rb, register_translations!).
+permissions:
+  - {key: manage_gk_access_private, scope: project, label: permission_manage_gk_access_private}     # the project's own kind of Private (the tab Private): makes it stricter; also gives projects#settings
+  - {key: gk_access_api_read, scope: project, label: permission_gk_access_api_read}                 # OAuth scope only: read levels, ceilings, kinds of Private and strictly private counts over REST; a role grants nothing with it
+  - {key: gk_access_api_manage, scope: project, label: permission_gk_access_api_manage}             # OAuth scope only: change levels, ceilings and kinds of Private over REST; a role grants nothing with it
+menu:
+  - {key: gk_access_levels, menu: admin_menu, label: label_gk_access_levels}
+drawer: []
+notices: []
+banners: []
+waves: []
+surfaces: []
+color_roles: []
+records:
+  targets:
+    - {key: gk_access_level, model: GkAccessLevel}
+    - {key: gk_access_role_level, model: GkAccessRoleLevel}
+    - {key: gk_access_private_mode, model: GkAccessPrivateMode}
+  note_kinds: []
+  event_kinds:
+    - {key: access.level, target: gk_access_level, label: label_gk_access_event_level}
+    - {key: access.role_level, target: gk_access_role_level, label: label_gk_access_event_role_level}
+    - {key: access.private_mode, target: gk_access_private_mode, label: label_gk_access_event_private_mode}
+    - {key: access.strict_removed, target: gk_access_private_mode, label: label_gk_access_event_strict_removed}
+    - {key: access.private, target: issue, label: label_gk_access_event_private}
+  link_kinds: []
+strings:
+  terms: []
+text_levels: []
+templates:
+  kinds: []
+scenario_steps:         # GkAccess::Scenarios (scenarios.rb); the checks access_levels, access_private_note, access_private_issue and access_private_modes
+  - {key: access, order: 150}
+jobs: []
+corners: []             # gui_stuff corner (hörnvik): {key, context, source, level}
+timeline: []            # planning tidsvyn: {key, kind: row_kind | span_source | point_source | count_source | decoration | side_panel | toolbar, label, condition, permission, renderer}
+queries: []             # queries-registret (kärnlager): {key, class, contexts: [global, project], default_columns, report}
+folds: []               # gui_stuff fold: {key, selector, threshold, label, memory: place | user | none}
+copies: []              # gui_stuff copy: {key, selector, format: text | link | markdown, label}
+view_states: []         # gui_stuff view_state: {key, context, values, default, label}; knappen i menyns Visa
+decorations: []         # gui_stuff decorate: {key, object_type, badge_source, where: [list, page, text]}
+content_transforms: []  # gui_stuff content: {key, selector, order, print: keep | strip}
+toolbar: []             # gui_stuff toolbar: {key, kind: insert | wrap | dialog, label, icon, target: [wiki, issue, note]}
+forms: []               # gui_stuff form: {key, schema, contexts}
+revisioned: []          # revisions release_flow: {model, policy_key (signoff), cmdb_binding: none | optional | always}
+locked: []              # gui_stuff locked (låst läge, suffix .locked): {context, keep: [delar som visas]}
+ribbons: []             # gui_stuff ribbon (hörnband): {key, context, word, line, target, priority}
+triggers: []            # triggers (kärnlager): färdiga utlösare pluginet levererar avstängda {key, label, event: {target, kind}, condition, actions, scope, enabled: false}
+trigger_actions: []     # triggers (kärnlager): åtgärder pluginet erbjuder {key, label, params, scope, mode: [job, sync], dry_run}
+gis_layers: []          # gis: lager pluginet visar {key, label, target, roles, color_role}
+gis_columns: []         # gis: egna geometrikolumner för massdata {table, column, srid, geometry_type, reason}
+disk_areas: []          # filområden på disk: {key, path eller setting + default, kind: content | byproduct | backup}; <attachments>, <redmine>, <plugin> ersätts
+appearances: {}          # fields layouts: utseenden per fälttyp {<field_format>: [{key, name, defaults: [show, edit, small], text}]}
+access_items: []        # access: uppgifter som bär en nivå {key, label, plugin}
+appearance_settings:    # records AppearanceSettings (Private.register_hint!, private.rb): off from the start; off draws nothing beside Private and Redmine's page is untouched
+  - {key: access.private_hint, group: issue, modes: ["off", optional, forced], default: "off", proposal: "off", values: [shape], label: label_gk_access_appearance_private_hint, help: text_gk_access_appearance_private_hint}
+footprints:             # records AppearanceSettings (footprint: and applies:, Private::HINT_FOOTPRINT in private.rb): what the setting changes on the pages
+  access.private_hint: {applies: [server, script], footprint: {anchors: ['.gk-access-private-hint'], pages: [core.issue]}}

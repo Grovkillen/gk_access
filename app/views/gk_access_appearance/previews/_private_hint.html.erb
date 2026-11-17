@@ -1,0 +1,10 @@
+<%# Visa for the explanation by Private, drawn only from GK GUI Stuff's page Appearance with its helpers: a note's badge
+    Private alone, as Redmine has it; with the setting, both forms with the same lock (GK Access's own partial, with a
+    made-up explanation): Icon only, the lock after the badge, and Full text, the lock and the line. The stylesheet
+    keeps the lock in the middle of the text. row: the setting %>
+<% gk_gui_stuff_preview_stylesheet('gk_access', plugin: 'gk_access') %>
+<% badge = content_tag(:span, l(:field_is_private), class: 'badge badge-private') %>
+<% hint = { strict: false, label: l(:label_gk_access_preview_hint), text: l(:text_gk_access_preview_hint) } %>
+<% icon = safe_join([badge, render(partial: 'gk_access_hooks/hint', locals: { hint: hint, lock: true })], ' ') %>
+<% full = render(partial: 'gk_access_hooks/hint', locals: { hint: hint }) %>
+<%= gk_gui_stuff_appearance_preview(row, off: badge, on: [icon, full], mid_line: true, note: l(:text_gk_access_preview_hint_note)) %>

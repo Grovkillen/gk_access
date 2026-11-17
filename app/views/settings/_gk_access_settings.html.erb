@@ -1,0 +1,21 @@
+<%# The plugin's page: no settings of its own (they are on Administration > Levels), so nothing stored is carried.
+    First the gate's line, as core's own warning line (GK GUI Stuff is the one not there, so nothing of it can draw the
+    line): GK GUI Stuff is missing, it is too old (with the version required), or it is installed in the right version
+    but not active (with a link to its own settings page); each says that protection and traces hold all
+    the same. Then what is missing when the required GK Records is not there, about the plugin (with what
+    uninstalling does with what is strictly private; the link to the levels only with GK GUI Stuff, since the page is
+    closed without it) and, with GK GUI Stuff, the change log, which GK GUI Stuff draws (gk_gui_stuff_changelog) %>
+<% plugin = Redmine::Plugin.find(:gk_access) %>
+<% gui_closed = GkAccess.gui_closed %>
+<% gui = gui_closed.nil? %>
+<% if gui_closed == :missing %><p class="warning"><%= l(:text_gk_access_gui_stuff_missing) %></p>
+<% elsif gui_closed == :old %><p class="warning"><%= l(:text_gk_access_gui_stuff_required, version: GkAccess::GUI_STUFF_MIN) %></p>
+<% elsif gui_closed == :inactive %><p class="warning"><%= l(:text_gk_access_gui_stuff_inactive) %> <%= link_to l(:label_gk_access_gui_stuff_settings), plugin_settings_path('gk_gui_stuff') %></p><% end %>
+<% unless GkAccess.records? %><p class="warning"><%= l(:error_gk_access_records) %></p><% end %>
+<fieldset class="box"><legend><%= l(:label_gk_access_about) %></legend>
+  <div><strong><%= plugin.name %></strong> <%= plugin.version %></div>
+  <div><%= l(:text_gk_access_description) %></div>
+  <div><%= l(:text_gk_access_settings_where) %><% if gui %> <%= link_to l(:label_gk_access_levels), gk_access_levels_path %><% end %></div>
+  <div><%= l(:text_gk_access_uninstall) %></div>
+</fieldset>
+<% if gui %><%= gk_gui_stuff_changelog(:gk_access) %><% end %>

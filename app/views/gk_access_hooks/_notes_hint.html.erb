@@ -1,0 +1,9 @@
+<%# By the check box for private notes, for whoever may write one: a lock after Redmine's label in both forms of the row,
+    a press on it opens the explanation; the explanation is also the tooltip of the lock, the check box and its label.
+    The lock is drawn where the hook stands and names the check box by the id Redmine's form builder gives it
+    (data-gk-access-by); gk_access.js lays it after the box and its labels %>
+<% issue = local_assigns[:issue] %>
+<% if GkAccess::Private.ready? && GkAccess::Private.hint_on? && issue&.project && User.current.allowed_to?(:set_notes_private, issue.project) %>
+  <%= render partial: 'gk_access_hooks/hint', locals: { id: 'gk-access-private-notes-hint', lock: true, data: { gk_access_by: 'issue_private_notes' },
+                                                        hint: GkAccess::Private.explain(:notes, issue.project, author: User.current) } %>
+<% end %>

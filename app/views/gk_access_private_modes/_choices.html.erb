@@ -1,0 +1,30 @@
+<%# The kind of Private for private issues and private notes, each with what it means. instance_mode: the instance's row
+    when the choice is a project's (what the instance holds strict stays strict there); may_loosen: false when only an
+    administrator may make it less strict; prefix: the start of the choices' ids (gk-access-...) %>
+<table class="list gk-access-private-choices">
+  <thead><tr><th></th><th><%= l(:label_gk_access_private_kind) %></th></tr></thead>
+  <tbody>
+  <% GkAccess::Private::KINDS.each do |kind| %>
+    <% own = mode.strict?(kind)
+       forced = instance_mode&.strict?(kind)
+       locked = forced || (own && !may_loosen) %>
+    <tr>
+      <td class="name"><label for="<%= "#{prefix}-#{kind}" %>"><%= l(:"label_gk_access_private_#{kind}") %></label></td>
+      <td class="text">
+        <% if locked %>
+          <%= hidden_field_tag "private[#{kind}]", 'strict', id: nil %>
+          <strong><%= l(:label_gk_access_private_strict) %></strong>
+          <em class="info"><%= forced ? l(:text_gk_access_private_forced) : l(:text_gk_access_private_admin_loosens) %></em>
+        <% else %>
+          <%= select_tag "private[#{kind}]",
+                         options_for_select([[l(:label_gk_access_private_core), 'core'], [l(:label_gk_access_private_strict), 'strict']],
+                                            own ? 'strict' : 'core'),
+                         id: "#{prefix}-#{kind}" %>
+        <% end %>
+        <p class="info"><%= l(:"text_gk_access_private_core_#{kind}") %><br><%= l(:"text_gk_access_private_strict_#{kind}") %></p>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+<p class="info"><%= l(:text_gk_access_private_marked_stays) %></p>

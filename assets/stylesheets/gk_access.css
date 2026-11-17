@@ -1,0 +1,13 @@
+/* The lock by Private (Appearance, The explanation by Private): the same icon in the role only for administrators and
+   in the same size in both forms, in em so that it follows the text. Its place on the row and its press surface are the
+   popover's (gk-gui-stuff-popover-tap). The middle of a line's text lies about a third of the font's size above the baseline,
+   so a lock of 1.2em starts a quarter of the size below it. */
+.gk-access-private-icon svg { display: block; inline-size: 1.2em; block-size: 1.2em; }
+.gk-access-private-icon { display: inline-block; vertical-align: -0.25em; color: var(--gk-role-ui-admin, var(--oc-violet-8, #6741d9)); }
+
+/* Redmine raises its badges in an issue's head 4 px over the line. The lock after them is raised as much, so that its
+   middle is the badge's middle; a note's badge is not raised, and a note's lock stays on its line */
+details.gk-access-private-lock.gk-access-private-lock-head { position: relative; inset-block-end: 4px; }
+/* the issue form's row of the check box Private is one of Redmine's rows that clip what stands outside them: the lock's
+   open box is let out of it */
+html > body .tabular p:has(details.gk-access-private-lock[open]) { overflow: visible; }

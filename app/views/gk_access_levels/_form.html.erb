@@ -1,0 +1,11 @@
+<%= error_messages_for 'level' %>
+<div class="box tabular">
+  <p><%= f.text_field :key, label: :label_gk_access_key, required: true, disabled: !@level.new_record?, size: 30, maxlength: 40 %>
+     <em class="info"><%= l(:text_gk_access_key_info) %></em></p>
+  <p><%= f.number_field :rank, label: :label_gk_access_rank, required: true, min: 0, step: 1 %>
+     <em class="info"><%= l(:text_gk_access_rank_info) %></em></p>
+  <p><%= f.text_field :name, required: !@level.default?, size: 60, maxlength: 120 %>
+     <% if @level.default? %><em class="info"><%= l(:text_gk_access_default_name, name: ::I18n.t(:"label_gk_access_level_#{@level.key}")) %></em><% end %></p>
+  <p><%= f.check_box :closed, label: :label_gk_access_closed %>
+     <em class="info"><%= l(:text_gk_access_closed_info) %></em></p>
+</div>

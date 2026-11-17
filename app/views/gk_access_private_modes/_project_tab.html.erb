@@ -1,0 +1,13 @@
+<%# The tab Private in a project's settings: the project's own kind of Private, never less strict than the instance's.
+    The save asks first in GK GUI Stuff's upper layer (gk_gui_stuff_confirm_data); the tab is registered only with GK
+    GUI Stuff, so the helper is there wherever the tab is drawn %>
+<% mode = ::GkAccessPrivateMode.find_by(project_id: @project.id) || ::GkAccessPrivateMode.new(project_id: @project.id)
+   instance_mode = ::GkAccessPrivateMode.instance_row || ::GkAccessPrivateMode.new %>
+<% unless GkAccess.records? %><p class="warning"><%= l(:error_gk_access_records) %></p><% end %>
+<p class="info"><%= l(:text_gk_access_private_project_info) %></p>
+<%= form_tag(gk_access_project_private_path(@project), id: 'gk-access-project-private') do %>
+  <%= render partial: 'gk_access_private_modes/choices',
+             locals: { mode: mode, instance_mode: instance_mode, may_loosen: User.current.admin?, prefix: 'gk-access-project-private' } %>
+  <%= render partial: 'gk_access_private_modes/inventory', locals: { inventory: GkAccess::Private.inventory(@project) } %>
+  <p><%= submit_tag l(:button_save), data: gk_gui_stuff_confirm_data(l(:text_gk_access_private_save_confirm)) %></p>
+<% end %>

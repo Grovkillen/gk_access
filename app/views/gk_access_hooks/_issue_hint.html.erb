@@ -1,0 +1,9 @@
+<%# On a private issue: which kind holds and who sees it. Full text: here, on the issue. Icon only: the lock, drawn by the
+    hook after the badges of the issue's head (Hooks#view_issues_show_top); where the issue view has no such hook it comes
+    here, inside the issue, and stays %>
+<% issue = local_assigns[:issue] %>
+<% if GkAccess::Private.ready? && GkAccess::Private.hint_on? && issue&.is_private? && issue.project && !controller.instance_variable_get(:@gk_access_issue_lock_drawn) %>
+  <%= render partial: 'gk_access_hooks/hint',
+             locals: { lock: GkAccess::Private.hint_shape == 'icon', head: local_assigns[:head],
+                       hint: GkAccess::Private.explain(:issues, issue.project, item: issue, author: issue.author, assignee: issue.assigned_to) } %>
+<% end %>
